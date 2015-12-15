@@ -1,0 +1,3 @@
+[submodule "QLazerDriveClient"]
+	path = QLazerDriveClient
+	url = https://github.com/vdechenaux/QLazerDriveClient.git
