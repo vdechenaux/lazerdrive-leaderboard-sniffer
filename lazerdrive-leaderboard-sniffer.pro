@@ -1,4 +1,4 @@
-QT += core
+QT += core websockets
 QT -= gui
 
 TARGET = lazerdrive-leaderboard-sniffer
@@ -7,7 +7,8 @@ CONFIG -= app_bundle
 
 TEMPLATE = app
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    lazerdriveapp.cpp
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/QLazerDriveClient/release/ -lQLazerDriveClient
@@ -16,3 +17,6 @@ else:unix: LIBS += -L$$PWD/QLazerDriveClient/ -lQLazerDriveClient
 
 INCLUDEPATH += $$PWD/QLazerDriveClient
 DEPENDPATH += $$PWD/QLazerDriveClient
+
+HEADERS += \
+    lazerdriveapp.h
