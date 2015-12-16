@@ -1,5 +1,7 @@
 # Lazerdrive leaderboard sniffer
 
+[![Build Status](https://travis-ci.org/vdechenaux/lazerdrive-leaderboard-sniffer.svg?branch=master)](https://travis-ci.org/vdechenaux/lazerdrive-leaderboard-sniffer)
+
 This tool is based on my library: [QLazerDriveClient](https://github.com/vdechenaux/QLazerDriveClient).
 
 ## How to use it
