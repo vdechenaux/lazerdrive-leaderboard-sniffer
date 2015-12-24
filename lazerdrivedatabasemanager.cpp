@@ -26,21 +26,21 @@ void LazerDriveDatabaseManager::updatePlayerHighScore(const QString &name, const
 
     QSqlQuery query;
     query.prepare("SELECT score FROM highscore WHERE player = :name");
-    query.bindValue(":name", name);
+    query.bindValue(":name", name.toUtf8());
     query.exec();
 
     if (query.size() == 0) {
         QSqlQuery insertQuery;
         insertQuery.prepare("INSERT INTO highscore (score, player) VALUES (:score, :name)");
         insertQuery.bindValue(":score", score);
-        insertQuery.bindValue(":name", name);
+        insertQuery.bindValue(":name", name.toUtf8());
         insertQuery.exec();
     }
     else if (query.first() && score > query.value(0).toInt()) {
         QSqlQuery updateQuery;
         updateQuery.prepare("UPDATE highscore SET score = :score WHERE player = :name");
         updateQuery.bindValue(":score", score);
-        updateQuery.bindValue(":name", name);
+        updateQuery.bindValue(":name", name.toUtf8());
         updateQuery.exec();
     }
 }
@@ -66,7 +66,7 @@ void LazerDriveDatabaseManager::updateOnlinePlayers(const QStringList &players)
         updateQuery.prepare(sql);
 
         foreach (QString name, players) {
-            updateQuery.addBindValue(name);
+            updateQuery.addBindValue(name.toUtf8());
         }
 
         updateQuery.exec();
