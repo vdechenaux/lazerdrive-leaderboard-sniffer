@@ -4,6 +4,7 @@ LazerDriveDatabaseManager::LazerDriveDatabaseManager(QObject *parent) : QObject(
 {
     m_database = QSqlDatabase::addDatabase("QMYSQL");
     m_database.setHostName(LazerDriveConfiguration::instance()->value("database/host", "localhost").toString());
+    m_database.setPort(LazerDriveConfiguration::instance()->value("database/port", 3306).toInt());
     m_database.setDatabaseName(LazerDriveConfiguration::instance()->value("database/dbname", "lazerdrive").toString());
     m_database.setUserName(LazerDriveConfiguration::instance()->value("database/user", "root").toString());
     m_database.setPassword(LazerDriveConfiguration::instance()->value("database/pass").toString());

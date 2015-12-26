@@ -68,6 +68,7 @@ Here is an example of config:
 ```
 [database]
 host=localhost
+port=3306
 dbname=lazerdrive
 user=root
 pass=toor
