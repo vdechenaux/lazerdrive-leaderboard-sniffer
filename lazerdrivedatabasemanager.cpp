@@ -18,30 +18,35 @@ LazerDriveDatabaseManager::~LazerDriveDatabaseManager()
     m_database.close();
 }
 
-void LazerDriveDatabaseManager::updatePlayerHighScore(const QString &name, const uint &score)
+void LazerDriveDatabaseManager::updatePlayer(const QLazerDrivePlayer &player)
 {
     if (!m_database.isOpen()) {
         qWarning() << "Skip score update because the connection to the database is not valid.";
         return;
     }
 
+    QString hexColor = QString::number((player.r() << 16) + (player.g() << 8) + player.b(), 16);
+
     QSqlQuery query;
-    query.prepare("SELECT score FROM highscore WHERE player = :name");
-    query.bindValue(":name", name.toUtf8());
+    query.prepare("SELECT id, highscore, color FROM player WHERE name = :name");
+    query.bindValue(":name", player.name().toUtf8());
     query.exec();
 
     if (query.size() == 0) {
         QSqlQuery insertQuery;
-        insertQuery.prepare("INSERT INTO highscore (score, player) VALUES (:score, :name)");
-        insertQuery.bindValue(":score", score);
-        insertQuery.bindValue(":name", name.toUtf8());
+        insertQuery.prepare("INSERT INTO player (name, color, highscore, is_online) VALUES (:name, :color, :score, 0)");
+        insertQuery.bindValue(":name", player.name().toUtf8());
+        insertQuery.bindValue(":color", hexColor);
+        insertQuery.bindValue(":score", player.score());
         insertQuery.exec();
     }
-    else if (query.first() && score > query.value(0).toInt()) {
+    else if (query.first() && (player.score() > query.value("highscore").toUInt() || hexColor != query.value("color").toString())) {
         QSqlQuery updateQuery;
-        updateQuery.prepare("UPDATE highscore SET score = :score WHERE player = :name");
-        updateQuery.bindValue(":score", score);
-        updateQuery.bindValue(":name", name.toUtf8());
+        updateQuery.prepare("UPDATE player SET highscore = GREATEST(:scoreLast, :scoreNow), color = :color WHERE id = :id");
+        updateQuery.bindValue(":scoreLast", query.value("highscore").toUInt());
+        updateQuery.bindValue(":scoreNow", player.score());
+        updateQuery.bindValue(":color", hexColor);
+        updateQuery.bindValue(":id", query.value("id").toInt());
         updateQuery.exec();
     }
 }
@@ -54,12 +59,12 @@ void LazerDriveDatabaseManager::updateOnlinePlayers(const QStringList &players)
     }
 
     QSqlQuery query;
-    query.exec("UPDATE highscore SET online = 0");
+    query.exec("UPDATE player SET is_online = 0");
 
     if (!players.isEmpty()) {
         QSqlQuery updateQuery;
 
-        QString sql = "UPDATE highscore SET online = 1 WHERE player IN (";
+        QString sql = "UPDATE player SET is_online = 1 WHERE name IN (";
 
         sql.append(QString("?,").repeated(players.length()));
         sql.replace(sql.length()-1 , 1, ")");

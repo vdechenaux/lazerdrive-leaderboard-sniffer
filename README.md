@@ -76,3 +76,16 @@ persist_interval=30
 ```
 
 If you want to use a `config.ini` with the Docker image, you must put it in the same directory as the Dockerfile and re-build the image. The file will be copied into it.
+
+## Database schema
+```
+CREATE TABLE `player` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `color` char(6) CHARACTER SET latin1 NOT NULL,
+  `highscore` int(10) unsigned NOT NULL,
+  `is_online` tinyint(1) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name_UNIQUE` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4;
+```

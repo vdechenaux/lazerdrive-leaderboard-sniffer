@@ -12,7 +12,6 @@ class LazerDriveApp : public QObject
     QLazerDriveClient *m_pClient;
     QMap<uint, QLazerDrivePlayer> *m_pPlayersCache;
     void addPlayerToCache(const QLazerDrivePlayer &player);
-    void addPlayerToCache(const uint &id, const QString &name);
     void removePlayerFromCache(const uint &id);
     void updatePlayerScore(const uint &id, const uint &score);
     QTimer *m_pFlushTimer;
@@ -25,7 +24,7 @@ signals:
 
 private slots:
     void lazerdriveConnected(QLazerDrivePlayer player);
-    void lazerdriveLeaderBoardLineReceived(uint playerId, uint score, uint rank, QString name);
+    void lazerdriveLeaderBoardLineReceived(QLazerDrivePlayer player, uint rank);
     void lazerdriveLeaderBoardScoreChanged(uint playerId, uint score);
     void lazerdrivePlayerEnteredTheGame(QLazerDrivePlayer player, bool isMyself, bool isAlias);
     void lazerdrivePlayerLeftTheGame(QLazerDrivePlayer player, bool isAlias);

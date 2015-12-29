@@ -11,7 +11,7 @@ LazerDriveApp::LazerDriveApp(QObject *parent) : QObject(parent)
     m_pClient = new QLazerDriveClient(this);
 
     connect(m_pClient, SIGNAL(connected(QLazerDrivePlayer)), this, SLOT(lazerdriveConnected(QLazerDrivePlayer)));
-    connect(m_pClient, SIGNAL(leaderBoardLineReceived(uint,uint,uint,QString)), this, SLOT(lazerdriveLeaderBoardLineReceived(uint,uint,uint,QString)));
+    connect(m_pClient, SIGNAL(leaderBoardLineReceived(QLazerDrivePlayer,uint)), this, SLOT(lazerdriveLeaderBoardLineReceived(QLazerDrivePlayer,uint)));
     connect(m_pClient, SIGNAL(leaderBoardScoreChanged(uint,uint)), this, SLOT(lazerdriveLeaderBoardScoreChanged(uint,uint)));
     connect(m_pClient, SIGNAL(playerEnteredTheGame(QLazerDrivePlayer,bool,bool)), this, SLOT(lazerdrivePlayerEnteredTheGame(QLazerDrivePlayer,bool,bool)));
     connect(m_pClient, SIGNAL(playerLeftTheGame(QLazerDrivePlayer,bool)), this, SLOT(lazerdrivePlayerLeftTheGame(QLazerDrivePlayer,bool)));
@@ -31,10 +31,9 @@ void LazerDriveApp::lazerdriveConnected(QLazerDrivePlayer player)
     qInfo() << "Connected " << player.name();
 }
 
-void LazerDriveApp::lazerdriveLeaderBoardLineReceived(uint playerId, uint score, uint rank, QString name)
+void LazerDriveApp::lazerdriveLeaderBoardLineReceived(QLazerDrivePlayer player, uint rank)
 {
-    addPlayerToCache(playerId, name);
-    updatePlayerScore(playerId, score);
+    addPlayerToCache(player);
 }
 
 void LazerDriveApp::lazerdriveLeaderBoardScoreChanged(uint playerId, uint score)
@@ -62,15 +61,15 @@ void LazerDriveApp::addPlayerToCache(const QLazerDrivePlayer &player)
     if (!m_pPlayersCache->contains(player.id())) {
         m_pPlayersCache->insert(player.id(), player);
         qDebug() << "[CACHE] Add player " << player.name();
+    } else {
+        qDebug() << "[CACHE] Update player " << player.name();
+        QLazerDrivePlayer cachedPlayer = m_pPlayersCache->value(player.id());
+        cachedPlayer.setR(player.r());
+        cachedPlayer.setG(player.g());
+        cachedPlayer.setB(player.b());
+        m_pPlayersCache->insert(player.id(), cachedPlayer);
+        updatePlayerScore(player.id(), player.score());
     }
-}
-
-void LazerDriveApp::addPlayerToCache(const uint &id, const QString &name)
-{
-    QLazerDrivePlayer player;
-    player.setId(id);
-    player.setName(name);
-    addPlayerToCache(player);
 }
 
 void LazerDriveApp::removePlayerFromCache(const uint &id)
@@ -88,8 +87,10 @@ void LazerDriveApp::updatePlayerScore(const uint &id, const uint &score)
         return;
 
     QLazerDrivePlayer player = m_pPlayersCache->value(id);
-    player.setScore(score);
-    m_pPlayersCache->insert(id, player);
+    if (score > player.score()) {
+        player.setScore(score);
+        m_pPlayersCache->insert(id, player);
+    }
 
     qDebug() << "[SCORE] Update player " << player.name() << score;
 }
@@ -99,7 +100,7 @@ void LazerDriveApp::flushTimerTimeout()
     qDebug() << "[DATABASE] Flushing...";
 
     foreach (QLazerDrivePlayer player, *m_pPlayersCache) {
-        LazerDriveDatabaseManager::instance()->updatePlayerHighScore(player.name(), player.score());
+        LazerDriveDatabaseManager::instance()->updatePlayer(player);
     }
 
     LazerDriveDatabaseManager::instance()->updateOnlinePlayers(playerNames());

@@ -8,6 +8,7 @@
 #include <QVariant>
 #include <QDebug>
 #include <QStringList>
+#include <qlazerdriveplayer.h>
 #include "lazerdriveconfiguration.h"
 
 class LazerDriveDatabaseManager : public QObject
@@ -18,7 +19,7 @@ class LazerDriveDatabaseManager : public QObject
     explicit LazerDriveDatabaseManager(QObject *parent = 0);
     ~LazerDriveDatabaseManager();
 public:
-    void updatePlayerHighScore(const QString &name, const uint &score);
+    void updatePlayer(const QLazerDrivePlayer &player);
     static LazerDriveDatabaseManager* instance();
     void updateOnlinePlayers(const QStringList &players);
 
