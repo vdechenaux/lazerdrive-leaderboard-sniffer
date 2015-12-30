@@ -34,6 +34,7 @@ void LazerDriveDatabaseManager::updatePlayer(const QLazerDrivePlayer &player)
     query.prepare("SELECT id, highscore, color FROM player WHERE name = :name");
     query.bindValue(":name", player.name().toUtf8());
     query.exec();
+    int mysqlPlayerId;
 
     if (query.size() == 0) {
         QSqlQuery insertQuery;
@@ -42,14 +43,38 @@ void LazerDriveDatabaseManager::updatePlayer(const QLazerDrivePlayer &player)
         insertQuery.bindValue(":color", hexColor);
         insertQuery.bindValue(":score", player.score());
         insertQuery.exec();
+        mysqlPlayerId = insertQuery.lastInsertId().toUInt();
     }
-    else if (query.first() && (player.score() > query.value("highscore").toUInt() || hexColor != query.value("color").toString())) {
+    else {
+        query.first();
+        mysqlPlayerId = query.value("id").toUInt();
+        if (player.score() > query.value("highscore").toUInt() || hexColor != query.value("color").toString()) {
+            QSqlQuery updateQuery;
+            updateQuery.prepare("UPDATE player SET highscore = GREATEST(:scoreLast, :scoreNow), color = :color WHERE id = :id");
+            updateQuery.bindValue(":scoreLast", query.value("highscore").toUInt());
+            updateQuery.bindValue(":scoreNow", player.score());
+            updateQuery.bindValue(":color", hexColor);
+            updateQuery.bindValue(":id", mysqlPlayerId);
+            updateQuery.exec();
+        }
+    }
+
+    query.prepare("SELECT id, highscore FROM player_daily_log WHERE player_id = :player_id");
+    query.bindValue(":player_id", mysqlPlayerId);
+    query.exec();
+
+    if (query.size() == 0) {
+        QSqlQuery insertQuery;
+        insertQuery.prepare("INSERT INTO player_daily_log (player_id, date, highscore) VALUES (:player_id, CURDATE(), :score)");
+        insertQuery.bindValue(":player_id", mysqlPlayerId);
+        insertQuery.bindValue(":score", player.score());
+        insertQuery.exec();
+    }
+    else if (query.first() && player.score() > query.value("highscore").toUInt()) {
         QSqlQuery updateQuery;
-        updateQuery.prepare("UPDATE player SET highscore = GREATEST(:scoreLast, :scoreNow), color = :color WHERE id = :id");
-        updateQuery.bindValue(":scoreLast", query.value("highscore").toUInt());
-        updateQuery.bindValue(":scoreNow", player.score());
-        updateQuery.bindValue(":color", hexColor);
-        updateQuery.bindValue(":id", query.value("id").toInt());
+        updateQuery.prepare("UPDATE player_daily_log SET highscore = :score WHERE id = :id");
+        updateQuery.bindValue(":score", player.score());
+        updateQuery.bindValue(":id", query.value("id").toUInt());
         updateQuery.exec();
     }
 }

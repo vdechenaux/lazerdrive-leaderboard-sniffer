@@ -80,12 +80,22 @@ If you want to use a `config.ini` with the Docker image, you must put it in the 
 ## Database schema
 ```
 CREATE TABLE `player` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(100) NOT NULL,
   `color` char(6) CHARACTER SET latin1 NOT NULL,
   `highscore` int(10) unsigned NOT NULL,
   `is_online` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `name_UNIQUE` (`name`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `player_daily_log` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `player_id` int(11) unsigned NOT NULL,
+  `date` date NOT NULL,
+  `highscore` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `date_player_id_UNIQUE` (`player_id`,`date`),
+  CONSTRAINT `fk_player_daily_log_player_id` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 ```
