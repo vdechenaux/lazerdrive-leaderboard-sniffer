@@ -26,6 +26,9 @@ void LazerDriveDatabaseManager::updatePlayer(const QLazerDrivePlayer &player)
     }
 
     QString hexColor = QString::number((player.r() << 16) + (player.g() << 8) + player.b(), 16);
+    if (hexColor.length() == 5) {
+        hexColor.prepend('0');
+    }
 
     QSqlQuery query;
     query.prepare("SELECT id, highscore, color FROM player WHERE name = :name");
