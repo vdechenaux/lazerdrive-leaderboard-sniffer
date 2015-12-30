@@ -33,6 +33,7 @@ void LazerDriveApp::lazerdriveConnected(QLazerDrivePlayer player)
 
 void LazerDriveApp::lazerdriveLeaderBoardLineReceived(QLazerDrivePlayer player, uint rank)
 {
+    Q_UNUSED(rank);
     addPlayerToCache(player);
 }
 
@@ -43,16 +44,21 @@ void LazerDriveApp::lazerdriveLeaderBoardScoreChanged(uint playerId, uint score)
 
 void LazerDriveApp::lazerdrivePlayerEnteredTheGame(QLazerDrivePlayer player, bool isMyself, bool isAlias)
 {
+    Q_UNUSED(isMyself);
+    Q_UNUSED(isAlias);
     addPlayerToCache(player);
 }
 
 void LazerDriveApp::lazerdrivePlayerLeftTheGame(QLazerDrivePlayer player, bool isAlias)
 {
+    Q_UNUSED(isAlias);
     removePlayerFromCache(player.id());
 }
 
 void LazerDriveApp::lazerdriveExistingPlayerInitialized(QLazerDrivePlayer player, uint x, uint y)
 {
+    Q_UNUSED(x);
+    Q_UNUSED(y);
     addPlayerToCache(player);
 }
 
