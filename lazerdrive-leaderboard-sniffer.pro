@@ -23,4 +23,5 @@ DEPENDPATH += $$PWD/QLazerDriveClient
 HEADERS += \
     lazerdriveapp.h \
     lazerdriveconfiguration.h \
-    lazerdrivedatabasemanager.h
+    lazerdrivedatabasemanager.h \
+    lazerdrivecacheentry.h

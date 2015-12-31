@@ -10,6 +10,7 @@
 #include <QStringList>
 #include <qlazerdriveplayer.h>
 #include "lazerdriveconfiguration.h"
+#include "lazerdrivecacheentry.h"
 
 class LazerDriveDatabaseManager : public QObject
 {
@@ -19,7 +20,7 @@ class LazerDriveDatabaseManager : public QObject
     explicit LazerDriveDatabaseManager(QObject *parent = 0);
     ~LazerDriveDatabaseManager();
 public:
-    void updatePlayer(const QLazerDrivePlayer &player);
+    void updatePlayer(const LazerDriveCacheEntry &cached);
     static LazerDriveDatabaseManager* instance();
     void updateOnlinePlayers(const QStringList &players);
 

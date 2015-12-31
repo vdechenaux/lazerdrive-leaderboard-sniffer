@@ -10,7 +10,7 @@ class LazerDriveApp : public QObject
 {
     Q_OBJECT
     QLazerDriveClient *m_pClient;
-    QMap<uint, QLazerDrivePlayer> *m_pPlayersCache;
+    QMap<uint, LazerDriveCacheEntry> *m_pPlayersCache;
     void addPlayerToCache(const QLazerDrivePlayer &player);
     void removePlayerFromCache(const uint &id);
     void updatePlayerScore(const uint &id, const uint &score);
@@ -29,6 +29,7 @@ private slots:
     void lazerdrivePlayerEnteredTheGame(QLazerDrivePlayer player, bool isMyself, bool isAlias);
     void lazerdrivePlayerLeftTheGame(QLazerDrivePlayer player, bool isAlias);
     void lazerdriveExistingPlayerInitialized(QLazerDrivePlayer player, uint x, uint y);
+    void lazerdrivePlayerDead(uint playerId, uint killerId, QLazerDrivePlayer::DeathTypes type, uint x, uint y, uint angle);
     void flushTimerTimeout();
 };
 

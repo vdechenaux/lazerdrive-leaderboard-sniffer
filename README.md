@@ -94,6 +94,8 @@ CREATE TABLE `player_daily_log` (
   `player_id` int(11) unsigned NOT NULL,
   `date` date NOT NULL,
   `highscore` int(10) unsigned NOT NULL,
+  `kills_count` int(10) unsigned NOT NULL,
+  `deaths_count` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `date_player_id_UNIQUE` (`player_id`,`date`),
   CONSTRAINT `fk_player_daily_log_player_id` FOREIGN KEY (`player_id`) REFERENCES `player` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
